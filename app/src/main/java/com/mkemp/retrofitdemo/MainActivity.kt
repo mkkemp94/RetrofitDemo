@@ -12,26 +12,22 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity()
 {
+    private lateinit var retService : AlbumService
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val retService = RetrofitInstance
+        retService = RetrofitInstance
             .getRetrofitInstance()
             .create(AlbumService::class.java)
 
-        val pathResponse: LiveData<Response<AlbumsItem>> = liveData {
-            val response = retService.getAlbum(3)
-            emit(response)
-        }
+        getRequestWithQueryParameters()
+//        getRequestWithPathParameters()
+    }
 
-        pathResponse.observe(this, Observer {
-
-            val title = it.body()?.title
-            Toast.makeText(applicationContext, title, Toast.LENGTH_LONG).show()
-
-        })
+    private fun getRequestWithQueryParameters() {
 
         val responseLiveData: LiveData<Response<Albums>> = liveData {
             val response = retService.getSortedAlbums(3)
@@ -51,5 +47,20 @@ class MainActivity : AppCompatActivity()
                 }
             }
         })
+
+    }
+
+    private fun getRequestWithPathParameters() {
+
+        val pathResponse: LiveData<Response<AlbumsItem>> = liveData {
+            val response = retService.getAlbum(3)
+            emit(response)
+        }
+
+        pathResponse.observe(this, Observer {
+            val title = it.body()?.title
+            Toast.makeText(applicationContext, title, Toast.LENGTH_LONG).show()
+        })
+
     }
 }
