@@ -3,6 +3,7 @@ package com.mkemp.retrofitdemo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.liveData
@@ -19,6 +20,19 @@ class MainActivity : AppCompatActivity()
         val retService = RetrofitInstance
             .getRetrofitInstance()
             .create(AlbumService::class.java)
+
+        val pathResponse: LiveData<Response<AlbumsItem>> = liveData {
+            val response = retService.getAlbum(3)
+            emit(response)
+        }
+
+        pathResponse.observe(this, Observer {
+
+            val title = it.body()?.title
+            Toast.makeText(applicationContext, title, Toast.LENGTH_LONG).show()
+
+        })
+
         val responseLiveData: LiveData<Response<Albums>> = liveData {
             val response = retService.getSortedAlbums(3)
             emit(response)
